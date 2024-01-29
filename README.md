@@ -36,7 +36,7 @@ Before you begin, ensure you have the following installed:
 1. Clone the repository:
 
    ```bash
-   git clone (https://github.com/diorsjoy/APIWeather.git)
+   git clone https://github.com/diorsjoy/APIWeather.git
    ```
 
 2. Navigate to the project directory:
@@ -84,5 +84,3 @@ Contributions are welcome! Please follow the [Contributing Guidelines](CONTRIBUT
 
 This project is licensed under the [MIT License](LICENSE).
 ```
-
-Please note that the above template is a starting point, and you should customize it based on your specific project details, structure, and additional features. Additionally, consider including sections for testing, deployment, and any other relevant information for your users and contributors.
