@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WeatherCast</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css"
+          integrity="sha384-JcKb8q3iqJ61gNV9KGb8thSsNjpSL0n8PARn9HuZOnIxN0hoP+VmmDGMN5t9UJ0Z" crossorigin="anonymous">
+    <link rel="stylesheet" href="weatherapp/public/style.css">
+</head>
+
+<body>
+<% if (data === '') { %>
+    <div class="container mt-5 col-lg-6">
+        <p class="display-4 text-center">WeatherCast🌤! by <a href="https://github.com/diorsjoy" target="_blank">Alina Nishan</a></p>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Search weather of your location</h5>
+                <form action="/" method="post">
+                    <div class="form-group">
+                        <input type="text" class="form-control" name="location" placeholder="Location">
+                        <p class="display-5 mt-3 text-muted">Default location is Astana, KZ</p>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Go</button>
+                </form>
+            </div>
+        </div>
+    </div>
+<% } else if (data === '0') { %>
+    <div class="container mt-5">
+        <div class="card">
+            <div class="card-body">
+                <p class="card-title">Oops! Lost in space🚀, try locations from Earth🌏 !</p>
+            </div>
+        </div>
+        <div class="text-center">
+            <a href="/" class="btn btn-primary mt-5 mx-auto">New location</a>
+        </div>
+    </div>
+<% } else { %>
+    <div class="container mt-5">
+        <p class="display-4 text-center">WeatherCast! by <a href="https://github.com/diorsjoy" target="_blank">Alina Nishan</a></p>
+        <div class="card">
+            <div class="card-body">
+                <h5 class="card-title">Weather in <%= data.name %>, <%= data.sys.country %></h5>
+                <p class="text-muted">Lat: <%= data.coord.lat %>, Lon: <%= data.coord.lon %></p>
+                <img class="float-right" src="http://openweathermap.org/img/wn/<%= data.weather[0].icon %>@2x.png" alt="icon">
+                <p class="display-1"><%= data.main.temp%><sup>o</sup>C</p>
+                <span class="text-muted">Feels like <%= data.main.feels_like %><sup>o</sup>C</span>
+                <h5 class="text-capitalize font-weight-bold"><%= data.weather[0].description %></h5>
+                <div class="overflow-x">
+                    <span class="pr-5 inf"><i class="fas fa-wind"></i> Wind <%= data.wind.speed %> m/sec</span>
+                    <span class="pr-5 inf"><i class="fas fa-paper-plane"></i> Pressure <%= data.main.pressure %> mb</span>
+                    <span class="pr-5 inf"><i class="fas fa-tint"></i> Humidity <%= data.main.humidity %>%</span>
+                    <span class="pr-5 inf"><i class="fas fa-eye"></i> Visibility <%= data.visibility/1000 %> km</span>
+                    <span class="pr-5 inf"><i class="fas fa-cloud"></i> Cloudiness <%= data.clouds.all %>%</span>
+                </div>
+                <br>
+                <hr>
+                <br>
+                <h5 class="card-title">Air Pollution in <%= data.name %></h5>
+                <% if (airPollutionData && airPollutionData.list && airPollutionData.list.length > 0) { %>
+                    <p class="text-muted">Air Quality Index (AQI): <%= airPollutionData.list[0].main.aqi %></p>
+                    <p class="text-muted">Main Pollutant: <%= airPollutionData.list[0].components.main %></p>
+                    <p class="text-muted">Carbon Monoxide (CO): <%= airPollutionData.list[0].components.co %> µg/m³</p>
+                    <p class="text-muted">Nitrogen Dioxide (NO<sub>2</sub>): <%= airPollutionData.list[0].components.no2 %> µg/m³</p>
+                    <!-- Include other pollutant components as needed -->
+                <% } else { %>
+                    <p class="text-muted">No air pollution data available</p>
+                <% } %>
+                <hr>
+                <br>
+                <h5 class="card-title">15-Day Weather Forecast</h5>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>Date</th>
+                        <th>Temperature Min (°C)</th>
+                        <th>Temperature Max (°C)</th>
+                        <th>Description</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <% forecastData.forEach(day => { %>
+                        <tr>
+                            <td><%= day.datetime %></td>
+                            <td><%= day.tempmin %></td>
+                            <td><%= day.tempmax %></td>
+                            <td><%= day.description %></td>
+                        </tr>
+                    <% }); %>
+                    </tbody>
+                </table>
+                <hr>
+                <br>
+                <h5 class="card-title">Astronomical Information</h5>
+                <p class="text-muted">Sunrise: <%= astronomyData.sunrise %> 🌅</p>
+                <p class="text-muted">Sunset: <%= astronomyData.sunset %> 🌇</p>
+                <p class="text-muted">Solar noon: <%= astronomyData.solar_noon%> 🕛</p>
+                <p class="text-muted">Day length: <%= astronomyData.day_length %> ⌛️</p>
+                <p class="text-muted">Moonrise: <%= astronomyData.moonrise %> 🎑</p>
+
+            </div>
+            <div id="map" class="mt-5" style="height: 400px;"></div>
+        </div>
+    </div>
+    <div class="text-center">
+        <a href="/" class="btn btn-primary mt-5 mx-auto">New location</a>
+    </div>
+    </div>
+<% } %>
+
+<script src="https://kit.fontawesome.com/ad862d8e11.js" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        <% if (data !== '' && data !== '0') { %>
+        var map = L.map('map').setView([<%= data.coord.lat %>, <%= data.coord.lon %>], 13);
+
+        L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            attribution: '© OpenStreetMap contributors'
+        }).addTo(map);
+
+        L.marker([<%= data.coord.lat %>, <%= data.coord.lon %>]).addTo(map)
+            .bindPopup('<%= data.name %>, <%= data.sys.country %>')
+            .openPopup();
+        <% } %>
+    });
+
+    function formatForecast(data){
+        var table="";
+        for (var i = 0; i < data.days.length; i++) {
+            table += "<tr>";
+            table += "<td>" + data.days[i].datetimeStr + "</td>";
+            table += "<td>" + data.days[i].tempmin + "</td>";
+            table += "<td>" + data.days[i].tempmax + "</td>";
+            table += "<td>" + data.days[i].conditions + "</td>";
+            table += "</tr>";
+        }
+        return table;
+    }
+</script>
+
+</body>
+
+</html>
